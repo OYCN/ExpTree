@@ -2,8 +2,10 @@
 #define CPP_11_2_1_CALCULATOR_COMPLEX_H_
 
 #include "node_result.h"
+#include "operator.h"
 #include "utils.h"
 #include "mdp.h"
+#include <string.h>
 
 // 后序遍历中值栈的结构体
 struct ComplexValueStruct{
@@ -15,30 +17,16 @@ struct ComplexValueStruct{
 // 用于计算表达式树
 class ComplexCalculator {
 public:
-    ComplexCalculator() : root_(NULL) { };
+    ComplexCalculator() : root_(nullptr) { };
 
 public:
     void bind(INode*);
     void calculate(MDP *mdp);
 
 private:
-    ComplexValueStruct GenSimpleValueStruct(ValueNode* value_name);
-    ComplexValueStruct GenComplexValueStruct(ColumnNode* value_name);
+    ComplexValueStruct GenValueStruct(INode* node, MDP *mdp);
     void RunAndPush(OptType opt, std::stack<ComplexValueStruct> &stack);
-    template<typename T>
-    T RunOperator(OptType opt,T left,T right);
     INode *root_;
 };
-
-template<typename T>
-T ComplexCalculator::RunOperator(OptType opt,T left,T right) {
-    switch (opt) {
-        case OptType::kPlus: return left+right;
-        case OptType::kSub: return left-right;
-        case OptType::kMult: return left*right;
-        case OptType::kDiv: return left/right;
-        default: return 0;
-    }
-}
 
 #endif

@@ -2,7 +2,7 @@
 
 template <typename T>
 T ResultNode::GetValue() const {
-    if(value_ != NULL) {
+    if(value_ != nullptr) {
         return *(reinterpret_cast<T*>(value_));
     } else {
         return T();

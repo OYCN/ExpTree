@@ -19,7 +19,7 @@ enum class OptType {
 class OperatorNode: public INode {
 public:
     // OperatorNode();
-    OperatorNode(OptType opt) : INode(NodeType::kOperator, DataType::kNULL), operator_(opt), left_(NULL), right_(NULL) { };
+    OperatorNode(OptType opt) : INode(NodeType::kOperator, DataType::kNULL), operator_(opt), left_(nullptr), right_(nullptr) { };
     OperatorNode(OptType opt, INode* left, INode* right): INode(NodeType::kOperator, DataType::kNULL), operator_(opt), left_(left), right_(right) { };
     ~OperatorNode() { delete left_; delete right_; };
 

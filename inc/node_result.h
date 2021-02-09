@@ -8,8 +8,8 @@
 // 结果节点
 class ResultNode: public INode {
 public:
-    ResultNode() : INode(NodeType::kResult, DataType::kNULL), value_(NULL), root_(NULL) { };
-    ResultNode(INode* root) : INode(NodeType::kResult, DataType::kNULL), value_(NULL), root_(root) { };
+    ResultNode() : INode(NodeType::kResult, DataType::kNULL), value_(nullptr), root_(nullptr) { };
+    ResultNode(INode* root) : INode(NodeType::kResult, DataType::kNULL), value_(nullptr), root_(root) { };
     ~ResultNode() { delete root_; };
 
 public:
@@ -29,8 +29,9 @@ private:
 template <typename T>
 void ResultNode::SetValue(T value) {
     DataType target = Type2DataType<T>();
-    if(target != GetDataType() || value_ == NULL) {
+    if(target != GetDataType() || value_ == nullptr) {
         FreeValueMem(GetDataType(), value_);
+        value_ = nullptr;
         SetDataType(Type2DataType<T>());
         AllocValueMem(GetDataType(), value_);
     }

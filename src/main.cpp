@@ -7,6 +7,7 @@
 #include "utils.h"
 #include "mdp.h"
 #include "calculator_simple.h"
+#include "calculator_complex.h"
 
 int main(int argc, char *argv[]) {
     ResultNode root1;
@@ -31,9 +32,9 @@ int main(int argc, char *argv[]) {
         )
     );
     std::cout << root1.Show() << std::endl;
-    SimpleCalculator cal;
-    cal.bind(&root1);
-    cal.calculate();
+    SimpleCalculator cal1;
+    cal1.bind(&root1);
+    cal1.calculate();
     std::cout << root1.Show() << std::endl;
 
     ResultNode root2;
@@ -58,12 +59,16 @@ int main(int argc, char *argv[]) {
         )
     );
     std::cout << root2.Show() << std::endl;
-    MDP mdp;
-    mdp.AddCol(3, DataType::kInt, "c1");
-    mdp.AddCol(3, DataType::kDouble, "c2");
-    mdp.AddCol(3, DataType::kNULL, "Result");
-    mdp.Set<int>(-1, 0, std::vector<int>({-1, 2, 3}));
-    mdp.Set<double>(-1, 1, std::vector<double>({0, -1.2, +1.2}));
+    MDP mdp(3);
+    mdp.AddCol(DataType::kInt, "c1");
+    mdp.AddCol(DataType::kDouble, "c2");
+    mdp.AddCol(DataType::kNULL, "Result");
+    mdp.SetCol<int>(0, {-1, 2, 3});
+    mdp.SetCol<double>(1, {0, -1.2, +1.2});
+    std::cout << mdp.Show() << std::endl;
+    ComplexCalculator cal2;
+    cal2.bind(&root2);
+    cal2.calculate(&mdp);
     std::cout << mdp.Show() << std::endl;
 
     return 0;

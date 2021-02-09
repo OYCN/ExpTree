@@ -2,9 +2,10 @@
 #define CPP_11_2_1_UTILS_H_
 
 #include "node_base.h"
+#include <type_traits>
 
 // 释放void*指向的内存
-void FreeValueMem(DataType type, void* &ptr);
+void FreeValueMem(DataType type, void* ptr);
 // 开辟给定类型的内存空间
 int AllocValueMem(DataType type, void* &ptr, int len = 1);
 // 对空间进行类型转换
@@ -12,7 +13,6 @@ void AltValueMem(DataType from_type, DataType to_type, void* &ptr, int len = 1);
 // 变量转字符串
 std::string Value2Str(DataType type, void* ptr);
 std::string Value2Str(DataType type, void* ptr, int offset);
-
 
 // 变量类型到类型枚举的映射
 template <typename T>
@@ -49,7 +49,7 @@ static void AltValueMemA(DataType from_type, DataType to_type, void* &ptr, int l
             AltValueMemB<A, double>(ptr, temp, len);
             break;
         }
-        default: FreeValueMem(to_type, temp); return;
+        default: FreeValueMem(to_type, temp); temp = nullptr; return;
     }
     FreeValueMem(from_type, ptr);
     ptr = temp;

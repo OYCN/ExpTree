@@ -10,6 +10,7 @@ public:
     ~ColumnNode() { };
 
 public:
+    int GetColIdx();
     std::string Show() const;
 
 private:

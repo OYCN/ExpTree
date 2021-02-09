@@ -51,7 +51,7 @@ std::string OperatorNode::Show() const {
     // 存放已经遍历的节点的字符串
     std::stack<std::string> stack_str;
     // 存放最后遍历的节点的地址，用于判断二叉树的子节点遍历状态，因为为后序遍历，右节点遍历完左节点必也遍历完。
-    INode *last_node_ptr = NULL;
+    INode *last_node_ptr = nullptr;
     stack_node_ptr.push(const_cast<OperatorNode*>(this));
     while(!stack_node_ptr.empty()) {
         INode *&top_node_ptr = stack_node_ptr.top();

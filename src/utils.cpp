@@ -1,14 +1,13 @@
 #include "utils.h"
 
-void FreeValueMem(DataType type, void* &ptr) {
-    if(ptr != NULL) {
+void FreeValueMem(DataType type, void* ptr) {
+    if(ptr != nullptr) {
         switch (type) {
             case DataType::kInt: delete reinterpret_cast<int*>(ptr); break;
             case DataType::kLong: delete reinterpret_cast<long*>(ptr); break;
             case DataType::kDouble: delete reinterpret_cast<double*>(ptr); break;
             default: free(ptr);break;
         }
-        ptr = NULL;
     }
 }
 
@@ -17,7 +16,7 @@ int AllocValueMem(DataType type, void* &ptr, int len) {
         case DataType::kInt: ptr = new int[len]; return sizeof(int)*len;
         case DataType::kLong: ptr = new long[len]; return sizeof(long)*len;
         case DataType::kDouble: ptr = new double[len]; return sizeof(double)*len;
-        default: ptr = NULL; return 0;
+        default: ptr = nullptr; return 0;
     }
 }
 
@@ -40,7 +39,7 @@ std::string Value2Str(DataType type, void* ptr) {
 }
 
 std::string Value2Str(DataType type, void* ptr, int offset) {
-    if(ptr != NULL) {
+    if(ptr != nullptr) {
         switch (type) {
             case DataType::kInt: return std::to_string(*(reinterpret_cast<int*>(ptr) + offset));
             case DataType::kLong: return std::to_string(*(reinterpret_cast<long*>(ptr) + offset));

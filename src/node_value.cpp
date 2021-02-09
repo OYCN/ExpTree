@@ -1,5 +1,9 @@
 #include "node_value.h"
 
+void* ValueNode::GetValuePtr() const {
+    return value_;
+}
+
 std::string ValueNode::Show() const {
     std::string str;
     switch (GetDataType()) {

@@ -1,18 +1,29 @@
 #include "mdp.h"
 #include <string.h>
 
-void MDP::AddCol(int len, DataType type, std::string name) {
-    if(row_num_ == 0 || row_num_ == len) {
-        row_num_ = len;
-        ++col_num_;
-        col_types_.push_back(type);
-        void* ptr;
-        int bytes = AllocValueMem(type, ptr, len);
-        if(ptr != NULL) {
-            memset(ptr, 0, bytes);
-        }
-        cols_.push_back(ptr);
-        col_names_.push_back(name);
+void MDP::AddCol(DataType type, std::string name) {
+    ++col_num_;
+    col_types_.push_back(type);
+    void* ptr;
+    int bytes = AllocValueMem(type, ptr, row_num_);
+    if(ptr != nullptr) {
+        memset(ptr, 0, bytes);
+    }
+    cols_.push_back(ptr);
+    col_names_.push_back(name);
+}
+
+void MDP::SetColType(int idx, DataType type) {
+    if(idx < col_num_) {
+        DataType &top = col_types_[idx];
+        top = type;
+    }
+}
+
+void MDP::SetColPtr(int idx, void* ptr) {
+    if(idx < col_num_) {
+        void* &top = cols_[idx];
+        top = ptr;
     }
 }
 
@@ -20,10 +31,19 @@ void* MDP::GetColPtr(int idx) {
     if(idx < col_num_) {
         return cols_[idx];
     }
+    return nullptr;
 }
 
 DataType MDP::GetColType(int idx) {
     return col_types_[idx];
+}
+
+int MDP::GetColNum() {
+    return col_num_;
+}
+
+int MDP::GetRowNum() {
+    return row_num_;
 }
 
 std::string MDP::Show() {

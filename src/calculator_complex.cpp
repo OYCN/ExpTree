@@ -14,7 +14,7 @@ void ComplexCalculator::calculate(MDP *mdp) {
     // 结果栈
     std::stack<ComplexValueStruct> stack_val;
     // 最后遍历的节点地址，用于判断二叉树的子节点遍历状态，因为为后序遍历，右节点遍历完左节点必也遍历完。
-    INode *last_node_ptr = NULL;
+    INode *last_node_ptr = nullptr;
     ResultNode *root = reinterpret_cast<ResultNode*>(root_);
     stack_node_ptr.push(root->GetRoot());
     while(!stack_node_ptr.empty()) {
@@ -36,50 +36,41 @@ void ComplexCalculator::calculate(MDP *mdp) {
             }
         // 若为值节点，值入栈
         } else if(top_node_ptr->GetNodeType() == NodeType::kConst || top_node_ptr->GetNodeType() == NodeType::kColumn) {
-            ComplexValueStruct temp = GenValueStruct(top_node_ptr);
+            ComplexValueStruct temp = GenValueStruct(top_node_ptr, mdp);
             stack_val.push(std::move(temp));
             last_node_ptr = top_node_ptr;
             stack_node_ptr.pop();
         }
     }
-    // 取出结果，存到ResultNode
+    // 取出结果，存到mdp中
     ComplexValueStruct t = std::move(stack_val.top());
-    switch (t.type) {
-        case DataType::kInt: root->SetValue<int>(*(reinterpret_cast<int*>(t.data))); break;
-        case DataType::kLong: root->SetValue<long>(*(reinterpret_cast<long*>(t.data))); break;
-        case DataType::kDouble: root->SetValue<double>(*(reinterpret_cast<double*>(t.data))); break;
-        default: break;
-    }
-    FreeValueMem(t.type, t.data);
+    // 判断长度
+    if(mdp->GetRowNum() != t.len) exit(-2);
+    int result_idx = mdp->GetColNum()-1;
+    // 释放原数据
+    FreeValueMem(mdp->GetColType(result_idx), mdp->GetColPtr(result_idx));
+    mdp->SetColType(result_idx, t.type);
+    mdp->SetColPtr(result_idx, t.data);
 }
 
-ComplexValueStruct ComplexCalculator::GenValueStruct(INode* value_node) {
+ComplexValueStruct ComplexCalculator::GenValueStruct(INode* node, MDP *mdp) {
     ComplexValueStruct temp;
-    temp.type = value_node->GetDataType();
-    switch (temp.type) {
-    case DataType::kInt: {
-        temp.data = new int;
-        int *t = reinterpret_cast<int*>(temp.data);
-        *t = value_node->GetValue<int>();
-        break;
+    int bytes;
+    void* src = nullptr;
+    if(node->GetNodeType() == NodeType::kConst) {
+        ValueNode* ptr = reinterpret_cast<ValueNode*>(node);
+        temp.len = 1;
+        temp.type = ptr->GetDataType();
+        bytes = AllocValueMem(temp.type, temp.data);
+        src = ptr->GetValuePtr();
+    } else if(node->GetNodeType() == NodeType::kColumn) {
+        ColumnNode* ptr = reinterpret_cast<ColumnNode*>(node);
+        temp.len = mdp->GetRowNum();
+        temp.type = mdp->GetColType(ptr->GetColIdx());
+        bytes = AllocValueMem(temp.type, temp.data, temp.len);
+        src = mdp->GetColPtr(ptr->GetColIdx());
     }
-    case DataType::kLong: {
-        temp.data = new long;
-        long *t = reinterpret_cast<long*>(temp.data);
-        *t = value_node->GetValue<long>();
-        break;
-    }
-    case DataType::kDouble: {
-        temp.data = new double;
-        double *t = reinterpret_cast<double*>(temp.data);
-        *t = value_node->GetValue<double>();
-        break;
-    }
-    default: {
-        temp.data = NULL;
-        break;
-    }
-    }
+    memcpy(temp.data, src, bytes);
     return std::move(temp);
 }
 
@@ -89,39 +80,11 @@ void ComplexCalculator::RunAndPush(OptType opt, std::stack<ComplexValueStruct> &
     ComplexValueStruct left = std::move(stack.top());
     stack.pop();
     ComplexValueStruct middle;
-    middle.type = std::max(right.type, left.type);
-    // 类型转换
-    if(right.type > left.type) {
-        AltValueMem(left.type, right.type, left.data);
-        left.type = right.type;
-    } else if(right.type < left.type) {
-        AltValueMem(right.type, left.type, right.data);
-        right.type = left.type;
-    }
-    // 根据类型进行运算
-    switch (middle.type) {
-        case DataType::kInt: {
-            middle.data = new int;
-            int *t = reinterpret_cast<int*>(middle.data);
-            *t = RunOperator(opt, *(reinterpret_cast<int*>(left.data)), *(reinterpret_cast<int*>(right.data)));
-            break;
-        }
-        case DataType::kLong: {
-            middle.data = new long;
-            long *t = reinterpret_cast<long*>(middle.data);
-            *t = RunOperator(opt, *(reinterpret_cast<long*>(left.data)), *(reinterpret_cast<long*>(right.data)));
-            break;
-        }
-        case DataType::kDouble: {
-            middle.data = new double;
-            double *t = reinterpret_cast<double*>(middle.data);
-            *t = RunOperator(opt, *(reinterpret_cast<double*>(left.data)), *(reinterpret_cast<double*>(right.data)));
-            break;
-        }
-        default: { middle.data = NULL; break; }
-    }
+    middle.data = RunOperator(opt, middle.type, left.data, right.data, left.type, right.type, left.len, right.len);
+    middle.len = std::max(left.len, right.len);
     FreeValueMem(right.type, right.data);
+    right.data = nullptr;
     FreeValueMem(left.type, left.data);
+    left.data = nullptr;
     stack.push(std::move(middle));
 }
-

@@ -14,7 +14,7 @@ void SimpleCalculator::calculate() {
     // 结果栈
     std::stack<SimpleValueStruct> stack_val;
     // 最后遍历的节点地址，用于判断二叉树的子节点遍历状态，因为为后序遍历，右节点遍历完左节点必也遍历完。
-    INode *last_node_ptr = NULL;
+    INode *last_node_ptr = nullptr;
     ResultNode *root = reinterpret_cast<ResultNode*>(root_);
     stack_node_ptr.push(root->GetRoot());
     while(!stack_node_ptr.empty()) {
@@ -52,6 +52,7 @@ void SimpleCalculator::calculate() {
         default: break;
     }
     FreeValueMem(t.type, t.data);
+    t.data = nullptr;
 }
 
 SimpleValueStruct SimpleCalculator::GenValueStruct(ValueNode *value_name) {
@@ -77,7 +78,7 @@ SimpleValueStruct SimpleCalculator::GenValueStruct(ValueNode *value_name) {
         break;
     }
     default: {
-        temp.data = NULL;
+        temp.data = nullptr;
         break;
     }
     }
@@ -90,38 +91,12 @@ void SimpleCalculator::RunAndPush(OptType opt, std::stack<SimpleValueStruct> &st
     SimpleValueStruct left = std::move(stack.top());
     stack.pop();
     SimpleValueStruct middle;
-    middle.type = std::max(right.type, left.type);
-    // 类型转换
-    if(right.type > left.type) {
-        AltValueMem(left.type, right.type, left.data);
-        left.type = right.type;
-    } else if(right.type < left.type) {
-        AltValueMem(right.type, left.type, right.data);
-        right.type = left.type;
-    }
-    // 根据类型进行运算
-    switch (middle.type) {
-        case DataType::kInt: {
-            middle.data = new int;
-            int *t = reinterpret_cast<int*>(middle.data);
-            *t = RunOperator(opt, *(reinterpret_cast<int*>(left.data)), *(reinterpret_cast<int*>(right.data)));
-            break;
-        }
-        case DataType::kLong: {
-            middle.data = new long;
-            long *t = reinterpret_cast<long*>(middle.data);
-            *t = RunOperator(opt, *(reinterpret_cast<long*>(left.data)), *(reinterpret_cast<long*>(right.data)));
-            break;
-        }
-        case DataType::kDouble: {
-            middle.data = new double;
-            double *t = reinterpret_cast<double*>(middle.data);
-            *t = RunOperator(opt, *(reinterpret_cast<double*>(left.data)), *(reinterpret_cast<double*>(right.data)));
-            break;
-        }
-        default: { middle.data = NULL; break; }
-    }
+    middle.data = RunOperator(opt, middle.type, left.data, right.data, left.type, right.type);
     FreeValueMem(right.type, right.data);
+    right.data = nullptr;
     FreeValueMem(left.type, left.data);
+    left.data = nullptr;
     stack.push(std::move(middle));
 }
+
+
