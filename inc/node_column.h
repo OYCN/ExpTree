@@ -14,7 +14,6 @@ public:
     std::string Show() const;
 
 private:
-    std::string name_;
     // 内部标识列索引
     int col_index_;
 };
