@@ -10,6 +10,7 @@
 #include "calculator_complex.h"
 
 int main(int argc, char *argv[]) {
+    std::cout << "===== Simple Expression Tree Test =====" << std::endl;
     ResultNode root1;
     // 表达式树构建(10 + (-3)) * 1.2 / (2 - 1) = result
     root1.SetRoot(
@@ -37,7 +38,9 @@ int main(int argc, char *argv[]) {
     cal1.calculate();
     std::cout << root1.Show() << std::endl;
 
+    std::cout << "===== Complex Expression Tree Test =====" << std::endl;
     ResultNode root2;
+    root2.SetColIndex(2);
     // 表达式树构建(c1 + (-3)) * c1 / (2 - c2) = result
     root2.SetRoot(
         new OperatorNode(
@@ -59,6 +62,7 @@ int main(int argc, char *argv[]) {
         )
     );
     std::cout << root2.Show() << std::endl;
+    // mdp初始化
     MDP mdp(3);
     mdp.AddCol(DataType::kInt, "c1");
     mdp.AddCol(DataType::kDouble, "c2");

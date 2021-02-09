@@ -8,12 +8,12 @@ void SimpleCalculator::bind(INode* root) {
     }
 }
 
-void SimpleCalculator::calculate() {
+void SimpleCalculator::calculate(MDP *mdp) {
     // 节点栈
     std::stack<INode*> stack_node_ptr;
     // 结果栈
     std::stack<SimpleValueStruct> stack_val;
-    // 最后遍历的节点地址，用于判断二叉树的子节点遍历状态，因为为后序遍历，右节点遍历完左节点必也遍历完。
+    // 最后遍历的节点地址
     INode *last_node_ptr = nullptr;
     ResultNode *root = reinterpret_cast<ResultNode*>(root_);
     stack_node_ptr.push(root->GetRoot());
@@ -55,6 +55,7 @@ void SimpleCalculator::calculate() {
     t.data = nullptr;
 }
 
+// 根据值节点，生成相应的值栈所用的结构体
 SimpleValueStruct SimpleCalculator::GenValueStruct(ValueNode *value_name) {
     SimpleValueStruct temp;
     temp.type = value_name->GetDataType();
@@ -86,12 +87,15 @@ SimpleValueStruct SimpleCalculator::GenValueStruct(ValueNode *value_name) {
 }
 
 void SimpleCalculator::RunAndPush(OptType opt, std::stack<SimpleValueStruct> &stack) {
+    // 右、左 出栈
     SimpleValueStruct right = std::move(stack.top());
     stack.pop();
     SimpleValueStruct left = std::move(stack.top());
     stack.pop();
+    // 计算结果
     SimpleValueStruct middle;
     middle.data = RunOperator(opt, middle.type, left.data, right.data, left.type, right.type);
+    // 释放右、左值的空间
     FreeValueMem(right.type, right.data);
     right.data = nullptr;
     FreeValueMem(left.type, left.data);

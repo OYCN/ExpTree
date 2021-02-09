@@ -23,12 +23,12 @@ enum class DataType {
 // 节点接口类
 class INode {
 public:
-    INode(NodeType nodeType, DataType dataType): node_type_(nodeType), data_type_(dataType) { };
+    INode(NodeType nodeType, DataType dataType): node_type_(nodeType), data_type_(dataType) { }
 
 public:
-    NodeType GetNodeType() const { return node_type_; };
-    DataType GetDataType() const { return data_type_; };
-    void SetDataType(DataType type) { data_type_ = type; };
+    NodeType GetNodeType() const { return node_type_; }
+    DataType GetDataType() const { return data_type_; }
+    void SetDataType(DataType type) { data_type_ = type; }
     // 将表达式树转换为表达式字符串返回
     virtual std::string Show() const = 0;
 

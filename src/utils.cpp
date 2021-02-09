@@ -50,3 +50,12 @@ std::string Value2Str(DataType type, void* ptr, int offset) {
         return std::string("");
     }
 }
+
+int DataType2Size(DataType type) {
+    switch (type) {
+        case DataType::kInt: return sizeof(int);
+        case DataType::kLong: return sizeof(long);
+        case DataType::kDouble: return sizeof(double);
+        default: return 0;
+    }
+}

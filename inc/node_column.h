@@ -6,8 +6,8 @@
 // 列节点类
 class ColumnNode: public INode {
 public:
-    ColumnNode(int idx, std::string name) : INode(NodeType::kColumn, DataType::kInt), col_index_(idx), name_(name) { };
-    ~ColumnNode() { };
+    ColumnNode(int idx, std::string name) : INode(NodeType::kColumn, DataType::kInt), col_index_(idx), name_(name) { }
+    ~ColumnNode() { }
 
 public:
     int GetColIdx();

@@ -1,8 +1,8 @@
 #ifndef CPP_11_2_1_CALCULATOR_COMPLEX_H_
 #define CPP_11_2_1_CALCULATOR_COMPLEX_H_
 
+#include "calculator_base.h"
 #include "node_result.h"
-#include "operator.h"
 #include "utils.h"
 #include "mdp.h"
 #include <string.h>
@@ -15,9 +15,9 @@ struct ComplexValueStruct{
 };
 
 // 用于计算表达式树
-class ComplexCalculator {
+class ComplexCalculator : public ICalculator {
 public:
-    ComplexCalculator() : root_(nullptr) { };
+    ComplexCalculator() : ICalculator() { }
 
 public:
     void bind(INode*);
@@ -26,7 +26,6 @@ public:
 private:
     ComplexValueStruct GenValueStruct(INode* node, MDP *mdp);
     void RunAndPush(OptType opt, std::stack<ComplexValueStruct> &stack);
-    INode *root_;
 };
 
 #endif

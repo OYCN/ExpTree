@@ -4,7 +4,7 @@ void ComplexCalculator::bind(INode* root) {
     if(root->GetNodeType() == NodeType::kResult) {
         root_ = root;
     } else {
-        exit(1);
+        exit(1);    // 错误
     }
 }
 
@@ -13,7 +13,7 @@ void ComplexCalculator::calculate(MDP *mdp) {
     std::stack<INode*> stack_node_ptr;
     // 结果栈
     std::stack<ComplexValueStruct> stack_val;
-    // 最后遍历的节点地址，用于判断二叉树的子节点遍历状态，因为为后序遍历，右节点遍历完左节点必也遍历完。
+    // 最后遍历的节点地址
     INode *last_node_ptr = nullptr;
     ResultNode *root = reinterpret_cast<ResultNode*>(root_);
     stack_node_ptr.push(root->GetRoot());
@@ -46,13 +46,15 @@ void ComplexCalculator::calculate(MDP *mdp) {
     ComplexValueStruct t = std::move(stack_val.top());
     // 判断长度
     if(mdp->GetRowNum() != t.len) exit(-2);
-    int result_idx = mdp->GetColNum()-1;
-    // 释放原数据
-    FreeValueMem(mdp->GetColType(result_idx), mdp->GetColPtr(result_idx));
+    // int result_idx = mdp->GetColNum()-1;    // 索引mdp最后一列
+    int result_idx = root->GetColIndex();
+    // 释放mdp原数据
+    mdp->FreeColMem(result_idx);
     mdp->SetColType(result_idx, t.type);
     mdp->SetColPtr(result_idx, t.data);
 }
 
+// 生成节点相应的结构体
 ComplexValueStruct ComplexCalculator::GenValueStruct(INode* node, MDP *mdp) {
     ComplexValueStruct temp;
     int bytes;
@@ -74,6 +76,7 @@ ComplexValueStruct ComplexCalculator::GenValueStruct(INode* node, MDP *mdp) {
     return std::move(temp);
 }
 
+// 运行计算并将结果入栈
 void ComplexCalculator::RunAndPush(OptType opt, std::stack<ComplexValueStruct> &stack) {
     ComplexValueStruct right = std::move(stack.top());
     stack.pop();

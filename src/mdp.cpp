@@ -13,6 +13,12 @@ void MDP::AddCol(DataType type, std::string name) {
     col_names_.push_back(name);
 }
 
+void MDP::FreeColMem(int idx) {
+    if(idx < col_num_) {
+        FreeValueMem(col_types_[idx], cols_[idx]);
+    }
+}
+
 void MDP::SetColType(int idx, DataType type) {
     if(idx < col_num_) {
         DataType &top = col_types_[idx];

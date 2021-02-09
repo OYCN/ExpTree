@@ -8,8 +8,13 @@
 
 class MDP {
 public:
-    MDP(int rows) : col_num_(0), row_num_(rows) { };
-    ~MDP() { for(int i = 0; i < col_num_; i++) {FreeValueMem(col_types_[i], cols_[i]); cols_[i] = nullptr; } };
+    MDP(int rows) : col_num_(0), row_num_(rows) { }
+    ~MDP() {
+        for(int i = 0; i < col_num_; i++) {
+            FreeValueMem(col_types_[i], cols_[i]);
+            cols_[i] = nullptr;
+        }
+    }
 
 public:
     // 获取单个数据
@@ -27,6 +32,7 @@ public:
     int GetColNum();
     int GetRowNum();
     void AddCol(DataType type, std::string name);
+    void FreeColMem(int idx);
     std::string Show();
 
 private:

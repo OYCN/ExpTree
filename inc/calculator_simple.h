@@ -1,8 +1,8 @@
 #ifndef CPP_11_2_1_CALCULATOR_SIMPLE_H_
 #define CPP_11_2_1_CALCULATOR_SIMPLE_H_
 
+#include "calculator_base.h"
 #include "node_result.h"
-#include "operator.h"
 #include "utils.h"
 
 struct SimpleValueStruct{
@@ -11,18 +11,17 @@ struct SimpleValueStruct{
 };
 
 // 用于计算表达式树
-class SimpleCalculator {
+class SimpleCalculator : public ICalculator {
 public:
-    SimpleCalculator() : root_(nullptr) { };
+    SimpleCalculator() : ICalculator() { }
 
 public:
     void bind(INode*);
-    void calculate();
+    void calculate(MDP *mdp = nullptr);
 
 private:
     SimpleValueStruct GenValueStruct(ValueNode *value_name);
     void RunAndPush(OptType opt, std::stack<SimpleValueStruct> &stack);
-    INode *root_;
 };
 
 #endif // CPP_11_2_1_CALCULATOR_H_

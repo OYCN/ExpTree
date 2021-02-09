@@ -8,22 +8,32 @@
 // 结果节点
 class ResultNode: public INode {
 public:
-    ResultNode() : INode(NodeType::kResult, DataType::kNULL), value_(nullptr), root_(nullptr) { };
-    ResultNode(INode* root) : INode(NodeType::kResult, DataType::kNULL), value_(nullptr), root_(root) { };
-    ~ResultNode() { delete root_; };
+    ResultNode() : INode(NodeType::kResult, DataType::kNULL), value_(nullptr), root_(nullptr), col_index_(0) { }
+    ResultNode(INode* root) : INode(NodeType::kResult, DataType::kNULL), value_(nullptr), root_(root), col_index_(0) { }
+    ResultNode(int index) : INode(NodeType::kResult, DataType::kNULL), value_(nullptr), root_(nullptr), col_index_(index) { }
+    ResultNode(INode* root, int index) : INode(NodeType::kResult, DataType::kNULL), value_(nullptr), root_(root), col_index_(index) { }
+    ~ResultNode() {
+        if(root_ != nullptr) {
+            delete root_;
+        }
+    }
 
 public:
     template <typename T>
     T GetValue() const;
     INode* GetRoot() const;
+    int GetColIndex();
     void SetRoot(INode*);
     template <typename T>
     void SetValue(T value);
+    void SetColIndex(int idx);
     std::string Show() const;
 
 private:
     void* value_;
     INode* root_;
+    // mdp结果列索引
+    int col_index_;
 };
 
 template <typename T>

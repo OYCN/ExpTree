@@ -13,8 +13,16 @@ INode* ResultNode::GetRoot() const {
     return root_;
 }
 
+int ResultNode::GetColIndex() {
+    return col_index_;
+}
+
 void ResultNode::SetRoot(INode* root) {
     root_ = root;
+}
+
+void ResultNode::SetColIndex(int idx) {
+    col_index_ = idx;
 }
 
 std::string ResultNode::Show() const {
